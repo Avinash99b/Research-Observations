@@ -31,13 +31,16 @@ For the tested Pony V6 XL checkpoint, a community Pony SDXL VAE, Euler Ancestral
 
 ### Optimizations measured so far
 
-For SDXL-Lightning on this T4, default contiguous memory format with PyTorch SDPA enabled and cuDNN benchmark off was fastest at a 4.223 s median for 1024². channels_last and cuDNN autotuning both regressed. torch.compile is under investigation; its cache configuration must use writable paths because /tmp and /root/.triton are read-only in the current runtime.
+For SDXL-Lightning on this T4, default contiguous memory format with PyTorch SDPA enabled and cuDNN benchmark off was fastest at a 4.223 s median for 1024². channels_last and cuDNN autotuning both regressed. torch.compile was successfully run after redirecting its cache and temporary-file paths, but cold-start cost was 145.5 s and the warm median (4.949 s) was slower than eager, so it is not recommended for this workload.
+
+For FLUX.2-klein, bitsandbytes 8-bit transformer quantization used a reported 3.609 GiB transformer footprint and successfully generated 1792² in 43.04 s where the FP16 path had OOMed. The 1920² probe was not preserved and remains unresolved.
 
 ## Reports
 
 ### Model and resolution
 - [FLUX.2-klein-4B dual-T4 resolution scaling](flux2_klein_4b_dual_t4_resolution_scaling_benchmark.md)
 - [FLUX.2-klein-4B native-resolution ceiling probe](flux2_klein_4b_dual_t4_native_resolution_ceiling_probe.md)
+- [FLUX.2-klein bitsandbytes 8-bit transformer quantization](flux2_klein_dual_t4_bnb8_transformer_quantization_benchmark.md)
 - [Pony V6 XL illustration conditioning](pony_v6_xl_dual_t4_illustration_conditioning_benchmark.md)
 - [Z-Image-Turbo FP16 validity failure](z_image_turbo_dual_t4_fp16_output_validity_failure.md)
 - [Z-Image-Turbo BF16 validity and performance](z_image_turbo_dual_t4_bf16_validity_and_performance.md)
